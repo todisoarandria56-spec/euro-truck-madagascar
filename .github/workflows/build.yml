@@ -1,0 +1,44 @@
+name: Build Euro Truck Madagascar APK
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Telecharger le projet
+        uses: actions/checkout@v4
+
+      - name: Installer Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Installer Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Installer Godot 4.3
+        uses: dulvui/godot-android-export@v4
+        with:
+          godot-version: 4.3
+          export-name: Android
+          output-directory: build
+          export-debug: true
+          export-release: false
+
+      - name: Renommer l APK
+        run: |
+          mkdir -p apk
+          find build -name "*.apk" -exec cp {} apk/EuroTruckMadagascar.apk ;
+
+      - name: Televerser l APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: EuroTruckMadagascar-APK
+          path: apk/EuroTruckMadagascar.apk
